@@ -1,5 +1,11 @@
-Spring Security Flow
+# Spring Security
 
+### What is security and why we need it?
+* Security is for protecting data and bussiness logic inside the application.
+* Security for a web application will be implemented in a different way like using firewalls, HTTPs, SSL, Authentication, Authhorization etc.
+* Using security we should also avoid most common security attack like CSRF, SEssion Fixation, XSS, CORS etc. inside our application
+
+## Spring Security Flow Diagram
 ```mermaid
 flowchart LR
     A[UserEnteredCredential] --1--> B[SpringSecurityFilter]
