@@ -39,3 +39,8 @@ sequenceDiagram
 * ReactiveUserDetailsServiceAdapter in WithUserDetailsSecurityContextFactory
 
 ### interface UserDetailsManager extends UserDetailsService 
+
+
+### interface PasswordEncoder
+#### class PasswordEncoderFactories
+    
