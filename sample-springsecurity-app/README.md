@@ -19,3 +19,23 @@ flowchart LR
     B--9-->H[SecurityContext]
     B--10-->A
 ```
+
+```mermaid
+sequenceDiagram
+    Spring Security Filter->>+AuthenticationManager()
+    Alice->>+John: John, can you hear me?
+    John-->>-Alice: Hi Alice, I can hear you!
+    John-->>-Alice: I feel great!
+```
+
+# Spring Security Classes
+### SpringBootWebSecurityConfiguration (Class to create the default SecurityFilterChain bean )
+* SpringBootWebSecurityConfiguration --> defaultSecurityFilterChain
+
+### UserDetailsService (I) loadUserByUsername
+* CachingUserDetailsService
+* InMemoryUserDetailsManager
+* JdbcDaoImpl
+* ReactiveUserDetailsServiceAdapter in WithUserDetailsSecurityContextFactory
+
+### interface UserDetailsManager extends UserDetailsService 
