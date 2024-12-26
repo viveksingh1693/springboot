@@ -1,23 +1,20 @@
 package com.viv.config;
 
-import com.viv.exceptionhandling.CustomBasicAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
 import static org.springframework.security.config.Customizer.withDefaults;
-import javax.sql.DataSource;
 
 
 @Configuration
-@Profile("!prod")
-public class ProjectSecurityConfig {
+@Profile("prod")
+public class ProjectSecurityProdConfig {
         /**
          * This method is used to configure the security filter chain.
          * Overriding default method of spring class
@@ -30,8 +27,7 @@ public class ProjectSecurityConfig {
 		@Bean
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
-            http
-//                    .requiresChannel(rcc->rcc.anyRequest().requiresInsecure())
+            http.requiresChannel(rcc-> rcc.anyRequest().requiresSecure()) //for enable https
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests((requests) -> requests
             .requestMatchers("/myAccount","/myBalance","/myLoans","/myCards").authenticated()
@@ -39,9 +35,8 @@ public class ProjectSecurityConfig {
             );
 			http.formLogin(withDefaults());
             // http.formLogin(flc->flc.disable()); //it will enable the basic http authentication
-			http.httpBasic(hbc->hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
-			http.exceptionHandling(ehc -> ehc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
-            return http.build();
+			http.httpBasic(withDefaults());
+			return http.build();
 		}
 
         /***
