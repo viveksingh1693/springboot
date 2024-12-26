@@ -393,6 +393,7 @@ In Hibernate, entities go through different states during their lifecycle. Under
 
 4. **Removed**: An entity is in the removed state when it is scheduled for deletion from the database. It will be deleted when the transaction is committed.
 
+
 ### Example
 
 Here is an example demonstrating the different states of an entity lifecycle:
@@ -429,3 +430,26 @@ In this example:
 - The entity moves to the removed state when it is deleted using `session.delete`.
 
 By understanding the entity lifecycle states, you can effectively manage entity persistence and interactions with the database in your Hibernate applications.
+
+## Entity Lifecycle Flow Diagram
+
+Below is a flow diagram that illustrates the different states of an entity lifecycle in Hibernate:
+
+```mermaid
+graph TD
+    A[Transient] -->|save| B[Persistent]
+    B -->|evict| C[Detached]
+    C -->|update| B
+    B -->|delete| D[Removed]
+    D -->|commit| E[Database]
+```
+
+In this diagram:
+- The entity starts in the **Transient** state.
+- When the entity is saved, it moves to the **Persistent** state.
+- If the entity is evicted from the session, it moves to the **Detached** state.
+- The entity can return to the **Persistent** state if it is updated.
+- When the entity is deleted, it moves to the **Removed** state.
+- Finally, upon committing the transaction, the entity is removed from the **Database**.
+
+This flow diagram helps visualize the transitions between different states of an entity in Hibernate.
