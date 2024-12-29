@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,12 +35,17 @@ public class ProjectSecurityConfig {
                     .sessionManagement(smc->
                             smc.invalidSessionUrl("/invalidSession")
                                     .maximumSessions(1)
-                    )
+                                    .maxSessionsPreventsLogin(true)
+                                    .expiredUrl("/expiredUrl")
+
+                    );
 //                    .requiresChannel(rcc->rcc.anyRequest().requiresInsecure())
+                    http.sessionManagement(session->
+                                    session.sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession))
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests((requests) -> requests
             .requestMatchers("/myAccount","/myBalance","/myLoans","/myCards").authenticated()
-            .requestMatchers("/notices","/contacts","/error","/register","/invalidSession").permitAll()
+            .requestMatchers("/notices","/contacts","/error","/register","/invalidSession","/expiredUrl").permitAll()
             );
 			http.formLogin(withDefaults());
             // http.formLogin(flc->flc.disable()); //it will enable the basic http authentication
