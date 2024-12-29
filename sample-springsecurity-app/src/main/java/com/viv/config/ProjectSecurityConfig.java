@@ -1,5 +1,6 @@
 package com.viv.config;
 
+import com.viv.exceptionhandling.CustomAccessDeniedHandler;
 import com.viv.exceptionhandling.CustomBasicAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +30,6 @@ public class ProjectSecurityConfig {
          */
 		@Bean
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-
             http
 //                    .requiresChannel(rcc->rcc.anyRequest().requiresInsecure())
                     .csrf(AbstractHttpConfigurer::disable)
@@ -40,7 +40,7 @@ public class ProjectSecurityConfig {
 			http.formLogin(withDefaults());
             // http.formLogin(flc->flc.disable()); //it will enable the basic http authentication
 			http.httpBasic(hbc->hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
-			http.exceptionHandling(ehc -> ehc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
+			http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
             return http.build();
 		}
 
