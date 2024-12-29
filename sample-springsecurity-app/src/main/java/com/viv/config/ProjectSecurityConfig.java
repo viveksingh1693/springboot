@@ -31,11 +31,15 @@ public class ProjectSecurityConfig {
 		@Bean
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
             http
+                    .sessionManagement(smc->
+                            smc.invalidSessionUrl("/invalidSession")
+                                    .maximumSessions(1)
+                    )
 //                    .requiresChannel(rcc->rcc.anyRequest().requiresInsecure())
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests((requests) -> requests
             .requestMatchers("/myAccount","/myBalance","/myLoans","/myCards").authenticated()
-            .requestMatchers("/notices","/contacts","/error","/register").permitAll()
+            .requestMatchers("/notices","/contacts","/error","/register","/invalidSession").permitAll()
             );
 			http.formLogin(withDefaults());
             // http.formLogin(flc->flc.disable()); //it will enable the basic http authentication

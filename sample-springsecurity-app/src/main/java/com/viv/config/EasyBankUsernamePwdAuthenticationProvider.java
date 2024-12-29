@@ -20,6 +20,7 @@ public class EasyBankUsernamePwdAuthenticationProvider implements Authentication
     private final UserDetailsService userDetailsService;
 
     private final PasswordEncoder passwordEncoder;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String userName = authentication.getName();
@@ -27,8 +28,15 @@ public class EasyBankUsernamePwdAuthenticationProvider implements Authentication
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
 
+        if(passwordEncoder.matches(pwd,userDetails.getPassword())){
+            //we can add our custom logic
             return  new UsernamePasswordAuthenticationToken(userName,pwd,userDetails.getAuthorities());
+        }
+        else{
+            throw  new BadCredentialsException("Invalid Password");
+        }
     }
+
 
     @Override
     public boolean supports(Class<?> authentication) {

@@ -1,5 +1,7 @@
 package com.viv.config;
 
+import com.viv.exceptionhandling.CustomAccessDeniedHandler;
+import com.viv.exceptionhandling.CustomBasicAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -27,15 +29,21 @@ public class ProjectSecurityProdConfig {
 		@Bean
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
-            http.requiresChannel(rcc-> rcc.anyRequest().requiresSecure()) //for enable https
+            http
+                    .sessionManagement(smc->
+                            smc.invalidSessionUrl("/invalidSession")
+                                    .maximumSessions(1)
+                    )
+                    .requiresChannel(rcc-> rcc.anyRequest().requiresSecure()) //for enable https
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests((requests) -> requests
             .requestMatchers("/myAccount","/myBalance","/myLoans","/myCards").authenticated()
-            .requestMatchers("/notices","/contacts","/error","/register").permitAll()
+            .requestMatchers("/notices","/contacts","/error","/register","/invalidSession").permitAll()
             );
 			http.formLogin(withDefaults());
             // http.formLogin(flc->flc.disable()); //it will enable the basic http authentication
-			http.httpBasic(withDefaults());
+            http.httpBasic(hbc->hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
+            http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 			return http.build();
 		}
 
