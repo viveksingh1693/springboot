@@ -12,6 +12,7 @@ import com.viv.model.Status;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -41,7 +42,9 @@ public class Student {
     @Column(name = "last_name")
     private String lastName;
 
-    
+
+    @Embedded
+    private Address homeAddress;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "varchar(255) default 'ACTIVE'")
