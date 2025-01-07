@@ -2,17 +2,23 @@ package com.viv.config;
 
 import com.viv.exceptionhandling.CustomAccessDeniedHandler;
 import com.viv.exceptionhandling.CustomBasicAuthenticationEntryPoint;
+import com.viv.filter.CsrfCookieFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+
 import static org.springframework.security.config.Customizer.withDefaults;
 import javax.sql.DataSource;
 
@@ -31,7 +37,11 @@ public class ProjectSecurityConfig {
          */
 		@Bean
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+
+            CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
+
             http
+                    .securityContext(contextSecurity -> contextSecurity.requireExplicitSave(false))
                     .sessionManagement(smc->
                             smc.invalidSessionUrl("/invalidSession")
                                     .maximumSessions(1)
@@ -41,7 +51,9 @@ public class ProjectSecurityConfig {
                     );
 //                    .requiresChannel(rcc->rcc.anyRequest().requiresInsecure())
                     http.sessionManagement(session->
-                                    session.sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession))
+                                    session
+                                            .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                                            .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession))
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests((requests) -> requests
             .requestMatchers("/myAccount","/myBalance","/myLoans","/myCards").authenticated()
@@ -51,6 +63,11 @@ public class ProjectSecurityConfig {
             // http.formLogin(flc->flc.disable()); //it will enable the basic http authentication
 			http.httpBasic(hbc->hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
 			http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
+            http.csrf(csrfConfig -> csrfConfig
+                    .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                    .ignoringRequestMatchers("/register")
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+            http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
             return http.build();
 		}
 

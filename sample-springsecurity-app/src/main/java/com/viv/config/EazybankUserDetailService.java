@@ -24,8 +24,18 @@ public class EazybankUserDetailService implements UserDetailsService {
         Customer customer = customerRepository
                 .findByEmail(username)
                 .orElseThrow(()-> new UsernameNotFoundException("User details not found for the use"+username));
-        List<GrantedAuthority> grantedAuthorities = List.of(new SimpleGrantedAuthority(customer.getRole()));
-        return  new User(customer.getEmail(),customer.getPwd(),grantedAuthorities);
+
+
+//        List<GrantedAuthority> grantedAuthorities =
+//                List.of(new SimpleGrantedAuthority(customer.getRole()));
+
+        List<SimpleGrantedAuthority> authorities = customer.getAuthorities()
+                .stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getName()))
+                .toList();
+
+
+        return  new User(customer.getEmail(),customer.getPwd(),authorities);
 
     }
 }

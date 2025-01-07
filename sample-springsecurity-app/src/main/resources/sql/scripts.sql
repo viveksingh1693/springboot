@@ -18,3 +18,18 @@ create table customer(
 insert ignore into customer(email,pwd, role) values ('user@example.com','{noop}12345','read');
 insert ignore into customer(email,pwd, role) values ('admin@example.com','{bcrypt}$2a$12$sn6EPYsxS2da9EalePlY9OUtL4ZCJc9TVctKWyQE1bfzjvWTCuWbW
 ','admin');
+
+
+CREATE TABLE authorities (
+    id INT NOT NULL AUTO_INCREMENT,
+    customer_id INT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id),
+    KEY customer_id (customer_id),
+    CONSTRAINT authorities_ibfk_1 FOREIGN KEY (customer_id) REFERENCES customer (id)
+);
+
+INSERT INTO authorities (customer_id, name)  VALUES (1, 'VIEWACCOUNT');
+INSERT INTO authorities (customer_id, name)  VALUES (1, 'VIEWCARDS');
+INSERT INTO authorities (customer_id, name)  VALUES (1, 'VIEWLOANS');
+INSERT INTO authorities (customer_id, name)  VALUES (1, 'VIEWBALANCE');
