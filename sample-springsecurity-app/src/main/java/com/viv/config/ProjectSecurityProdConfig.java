@@ -39,7 +39,11 @@ public class ProjectSecurityProdConfig {
                     .requiresChannel(rcc-> rcc.anyRequest().requiresSecure()) //for enable https
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests((requests) -> requests
-            .requestMatchers("/myAccount","/myBalance","/myLoans","/myCards").authenticated()
+                                    .requestMatchers("/myAccount").hasRole("USER")
+                                    .requestMatchers("/myBalance").hasAuthority("VIEWBALANCE")
+                                    .requestMatchers("/myLoans").hasAuthority("VIEWLOANS") //authority based control
+                                    .requestMatchers("/myCards").hasAnyRole("ADMIN","USER")  //Role bas control
+                                    .requestMatchers("/user").authenticated()
             .requestMatchers("/notices","/contacts","/error","/register","/invalidSession").permitAll()
             );
 			http.formLogin(withDefaults());

@@ -56,7 +56,11 @@ public class ProjectSecurityConfig {
                                             .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession))
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests((requests) -> requests
-            .requestMatchers("/myAccount","/myBalance","/myLoans","/myCards").authenticated()
+            .requestMatchers("/myAccount").hasRole("VIEWACCOUNT")
+                                    .requestMatchers("/myBalance").hasRole("VIEWBALANCE")
+                                    .requestMatchers("/myLoans").hasRole("VIEWLOANS")
+                                    .requestMatchers("/myCards").hasRole("VIEWCARDS")
+                                    .requestMatchers("/user").authenticated()
             .requestMatchers("/notices","/contacts","/error","/register","/invalidSession","/expiredUrl").permitAll()
             );
 			http.formLogin(withDefaults());

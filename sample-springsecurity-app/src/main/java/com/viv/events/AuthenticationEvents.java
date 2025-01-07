@@ -24,4 +24,6 @@ public class AuthenticationEvents {
         log.error("Login Failed for the user {} due to {}",failureEvent.getAuthentication().getName(),
                 failureEvent.getException().getMessage());
     }
+
+
 }
