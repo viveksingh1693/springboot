@@ -2,7 +2,9 @@ package com.viv.config;
 
 import com.viv.exceptionhandling.CustomAccessDeniedHandler;
 import com.viv.exceptionhandling.CustomBasicAuthenticationEntryPoint;
+import com.viv.filter.AuthoritiesLoggingAtFilter;
 import com.viv.filter.CsrfCookieFilter;
+import com.viv.filter.RequestValidationBeforeFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -72,6 +74,8 @@ public class ProjectSecurityConfig {
                     .ignoringRequestMatchers("/register")
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()));
             http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
+            http.addFilterBefore(new RequestValidationBeforeFilter(),BasicAuthenticationFilter.class);
+            http.addFilterAt(new AuthoritiesLoggingAtFilter(),BasicAuthenticationFilter.class);
             return http.build();
 		}
 
