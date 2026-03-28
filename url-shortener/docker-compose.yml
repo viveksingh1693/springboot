@@ -1,0 +1,41 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    container_name: url-shortener-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: url-shortener-backend
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      APP_BASE_URL: http://localhost:8080
+      FRONTEND_BASE_URL: http://localhost:4173
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: url-shortener-frontend
+    depends_on:
+      - backend
+    ports:
+      - "4173:80"
+
+volumes:
+  redis-data:
